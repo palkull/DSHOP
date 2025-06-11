@@ -23,7 +23,10 @@ router.post("/users", (req, res) => {
   res.send("Getting all users!");
 });
 
-router.delete("/users/:id", (req, res) => {
+router.delete("/users/:id", async (req, res) => {
+  const { id } = req.params; // Access the user ID from the request parameters
+  const {rows} = await pool.query('select * from users where id = $1', [id]);
+
   res.send("User deleted successfully!");
 });
 
