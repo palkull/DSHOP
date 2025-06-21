@@ -25,9 +25,14 @@ router.post("/users", (req, res) => {
 
 router.delete("/users/:id", async (req, res) => {
   const { id } = req.params; // Access the user ID from the request parameters
-  const {rows} = await pool.query('select * from users where id = $1', [id]);
-
+  const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+  console.log(result);
+  // Check if any rows were affected (deleted)
+  if (result.rowCount === 0) {
+    return res.status(404).json({ error: "User not found" });
+  }
   res.send("User deleted successfully!");
+
 });
 
 router.put("/users/:id", (req, res) => {
