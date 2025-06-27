@@ -19,14 +19,17 @@ router.get("/users/:id", async (req, res) => {
     res.json(rows);
 });
 
-router.post("/users", (req, res) => {
-  res.send("Getting all users!");
+router.post("/users", async (req, res) => {
+  const data = req.body; // Get the data from the request body
+  const {rows} = await pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [data.name, data.email]);
+  console.log(rows);
+  return res.json(rows[0]); // Return the newly created user
 });
 
 router.delete("/users/:id", async (req, res) => {
   const { id } = req.params; // Access the user ID from the request parameters
-  const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
-  console.log(result);
+  const {rows} = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+  console.log(rows);
   // Check if any rows were affected (deleted)
   if (result.rowCount === 0) {
     return res.status(404).json({ error: "User not found" });
