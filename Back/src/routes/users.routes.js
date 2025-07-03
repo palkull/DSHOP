@@ -16,7 +16,7 @@ router.get("/users/:id", async (req, res) => {
   if (rows.length === 0) {
     return res.status(404).json({ error: "User not found" }); }
 
-    res.json(rows);
+    res.json(rows[0]); // Return the user data as JSON
 });
 
 router.post("/users", async (req, res) => {
@@ -38,8 +38,13 @@ router.delete("/users/:id", async (req, res) => {
 
 });
 
-router.put("/users/:id", (req, res) => {
+router.put("/users/:id", async (req, res) => {
     const { id } = req.params; // Access the user ID from the request parameters
-  res.send("Users route is working!" + id);
-});
+    const data = req.body; // Get the data from the request body
+    const result = await pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [data.name, data.email, id]);
+    console.log(result);
+  
+      res.send("User updated successfully!" + id);
+
+  });
 export default router;
